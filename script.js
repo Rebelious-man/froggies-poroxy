@@ -20,18 +20,22 @@ window.addEventListener('load', () => {
     setTimeout(() => {
         document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
-    }, 3000); // 3 seconds loading
+    }, 3000);
 });
 
-// Handle search form
-const searchForm = document.getElementById("searchForm");
-const searchInput = document.getElementById("searchInput");
-const searchFrame = document.getElementById("searchFrame");
+// Handle URL form
+const urlForm = document.getElementById("urlForm");
+const urlInput = document.getElementById("urlInput");
+const browserFrame = document.getElementById("browserFrame");
 
-searchForm.addEventListener("submit", function(e) {
+urlForm.addEventListener("submit", function(e){
     e.preventDefault(); // Prevent leaving the page
-    const query = searchInput.value.trim();
-    if(query) {
-        searchFrame.src = "https://duckduckgo.com/?q=" + encodeURIComponent(query);
+    let url = urlInput.value.trim();
+
+    // Ensure URL has http/https
+    if(!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
     }
+
+    browserFrame.src = url;
 });
