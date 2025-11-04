@@ -1,7 +1,9 @@
+/* Base Dark Theme */
 body {
     margin:0;
     font-family: 'Comic Sans MS', sans-serif;
-    background: linear-gradient(135deg,#89f7fe,#66a6ff);
+    background:#111;
+    color:#eee;
 }
 
 /* Home Screen */
@@ -12,36 +14,71 @@ body {
     justify-content:center;
     height:100vh;
     text-align:center;
-    background: radial-gradient(circle, #fffa65,#ff8c00);
+    background: radial-gradient(circle at top left,#0d0d0d,#1a1a1a);
 }
 
-#homeScreen h1 { font-size:4em; color:#007700; text-shadow:2px 2px #222; }
-.subtitle { font-size:1.5em; margin-bottom:20px; }
+#homeScreen h1 {
+    font-size:4em; 
+    color:#00ff66; 
+    text-shadow: 2px 2px 8px #000;
+}
+
+.subtitle {
+    font-size:1.5em; 
+    margin-bottom:20px;
+    color:#aaffaa;
+}
 
 .site-buttons button {
     margin:10px;
-    padding:10px 20px;
-    font-size:1em;
+    padding:15px 25px;
+    font-size:1.2em;
     cursor:pointer;
-    border-radius:5px;
-    background:#00ff66;
+    border-radius:10px;
+    border:none;
+    background: linear-gradient(45deg, #00ff66, #009900);
+    color:#000;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.site-buttons button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #00ff66;
+}
+
+/* Animated Frogs at bottom */
+.animated-frogs {
+    margin-top:30px;
+    font-size:2em;
+}
+.animated-frogs span {
+    display:inline-block;
+    animation: hop 1s infinite;
+}
+.animated-frogs span:nth-child(2) { animation-delay: 0.2s; }
+.animated-frogs span:nth-child(3) { animation-delay: 0.4s; }
+.animated-frogs span:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes hop {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
 }
 
 /* VPN Overlay */
 .vpn-overlay {
     position:fixed;top:0;left:0;width:100%;height:100%;
-    background:linear-gradient(135deg,#ffd89b,#19547b);
+    background:linear-gradient(135deg,#333,#111);
     display:flex;flex-direction:column;justify-content:center;align-items:center;
     color:white; z-index:1000;
+    text-align:center;
 }
-
-.vpn-overlay button { padding:10px 20px; font-size:1.2em; margin-top:20px; cursor:pointer; }
+.vpn-overlay button { padding:10px 20px; font-size:1.2em; margin-top:20px; cursor:pointer; background:#00ff66; border:none; border-radius:5px; color:#000; }
 
 /* Browser UI */
-.tab-bar { display:flex; background:#ffd700; padding:5px; }
-.tab-bar button { margin-right:5px; padding:5px 10px; cursor:pointer; }
-.url-bar { display:flex; padding:10px; background:#fffa65; }
-.url-bar input { flex:1; padding:5px; font-size:1em; }
-.url-bar button { padding:5px 10px; margin-left:5px; cursor:pointer; }
+.tab-bar { display:flex; background:#222; padding:5px; }
+.tab-bar button { margin-right:5px; padding:5px 10px; cursor:pointer; background:#444; color:#fff; border:none; border-radius:5px; }
+.tab-bar button:hover { background:#00ff66; color:#000; }
+.url-bar { display:flex; padding:10px; background:#111; }
+.url-bar input { flex:1; padding:5px; font-size:1em; background:#222; color:#fff; border:none; border-radius:5px; }
+.url-bar button { padding:5px 10px; margin-left:5px; cursor:pointer; background:#00ff66; border:none; border-radius:5px; color:#000; }
 #iframeContainer { width:100%; height:80vh; position:relative; }
 iframe { width:100%; height:100%; border:none; position:absolute; top:0; left:0; }
