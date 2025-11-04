@@ -1,6 +1,5 @@
-froggies-proxy/          <-- Root folder (your GitHub repo or local folder)
+froggies-proxy/
 │
-├── index.html           <-- Main HTML page
-├── style.css            <-- CSS styling
-├── script.js            <-- JavaScript for loading and iframe
-└── README.md            <-- Optional: description for GitHub
+├── index.html
+├── style.css
+└── script.js
