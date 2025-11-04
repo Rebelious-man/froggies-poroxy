@@ -1,4 +1,4 @@
-       <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,17 +12,27 @@
       <div class="logo">
         <span class="frog">🐸</span> Froggies Proxy Browser
       </div>
-      <div class="search-bar">
-        <input id="searchInput" type="text" placeholder="Search or enter a URL...">
+      <div class="address-bar">
+        <input id="searchInput" type="text" placeholder="Enter URL..." />
         <button id="searchButton">Go</button>
       </div>
     </div>
     
-    <div class="tabs-container">
-      <div class="tabs" id="tabs">
-        <!-- Tabs will appear here dynamically -->
+    <div class="tabs-container" id="tabs">
+      <!-- Tabs will appear here -->
+    </div>
+    
+    <div class="content-area">
+      <div class="tab-content" id="tabContent">
+        <!-- Website content will be loaded inside here -->
       </div>
-      <div class="content-area">
-        <div class="tab-content" id="tabContent">
-          <!-- Iframe will load the websites here -->
-        </div>
+    </div>
+
+    <div class="popup" id="loadingPopup">
+      <span>🐸</span> <span id="loadingText">Loading...</span>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
