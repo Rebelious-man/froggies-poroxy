@@ -1,72 +1,98 @@
-const overlay = document.getElementById('overlay');
-const loadingText = document.getElementById('loading-text');
-const goBtn = document.getElementById('go-btn');
-const urlInput = document.getElementById('url-input');
-const iframeContainer = document.getElementById('iframe-container');
-const mainIframe = document.getElementById('main-iframe');
-const newTabBtn = document.getElementById('new-tab-btn');
-const tabs = document.getElementById('tabs');
+// Basic configuration
+const HOME_URL = 'https://anything.aaimsedu.in';
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';  // CORS proxy
 
-let tabCount = 1;
-let activeTabId = 'tab1';
+// DOM elements
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
+const loadingPopup = document.getElementById('loadingPopup');
+const loadingText = document.getElementById('loadingText');
+const tabsContainer = document.getElementById('tabs');
+const tabContent = document.getElementById('tabContent');
 
-function showOverlay() {
-    const messages = [
-        "Loading the froggiest proxy...",
-        "Hopping through the web...",
-        "Eating virtual flies...",
-        "Croak! Almost there...",
-        "Froggies are dancing!"
-    ];
-    let i = 0;
-    loadingText.textContent = messages[i];
-    overlay.style.display = 'flex';
-    const interval = setInterval(() => {
-        i = (i + 1) % messages.length;
-        loadingText.textContent = messages[i];
-    }, 1000);
-    return interval;
+// Active tab tracking
+let activeTab = null;
+let tabIndex = 0;
+const tabs = [];
+
+// Helper function to show the loading popup
+function showLoading(text = 'Loading...') {
+  loadingText.innerText = text;
+  loadingPopup.style.display = 'flex';
 }
 
-function hideOverlay(interval) {
-    clearInterval(interval);
-    overlay.style.display = 'none';
+// Helper function to hide the loading popup
+function hideLoading() {
+  loadingPopup.style.display = 'none';
 }
 
-goBtn.addEventListener('click', () => {
-    const url = urlInput.value.trim();
-    if (!url) return;
-    const interval = showOverlay();
-    mainIframe.src = url;
-    mainIframe.onload = () => hideOverlay(interval);
+// Function to create a new tab
+function createTab(url) {
+  const tabId = `tab-${tabIndex++}`;
+  const tab = document.createElement('div');
+  tab.classList.add('tab');
+  tab.setAttribute('data-tab-id', tabId);
+  tab.innerHTML = `<span>${url}</span>`;
+  tabsContainer.appendChild(tab);
+
+  // Click event for switching tabs
+  tab.addEventListener('click', () => {
+    switchTab(tabId);
+  });
+
+  tabs.push({ id: tabId, url: url });
+  switchTab(tabId);
+}
+
+// Switch to a specific tab
+function switchTab(tabId) {
+  // Deactivate the current tab
+  if (activeTab) {
+    const activeTabElement = document.querySelector(`.tab[data-tab-id="${activeTab}"]`);
+    activeTabElement.classList.remove('active');
+  }
+
+  // Activate the new tab
+  activeTab = tabId;
+  const newTabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+  newTabElement.classList.add('active');
+
+  // Update iframe with the corresponding URL
+  const tab = tabs.find(tab => tab.id === tabId);
+  loadTabContent(tab.url);
+}
+
+// Load content in the iframe for the active tab
+function loadTabContent(url) {
+  showLoading('Loading content...');
+  tabContent.innerHTML = `<iframe src="${CORS_PROXY}${encodeURIComponent(url)}" sandbox="allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>`;
+  hideLoading();
+}
+
+// Handle search button click
+searchButton.addEventListener('click', () => {
+  const query = searchInput.value.trim();
+  if (query) {
+    // If it's a URL, load directly, otherwise treat it as a search query
+    if (isValidUrl(query)) {
+      createTab(query);
+    } else {
+      const searchUrl = `${HOME_URL}?q=${encodeURIComponent(query)}`;
+      createTab(searchUrl);
+    }
+  }
+  searchInput.value = ''; // Clear input field after search
 });
 
-newTabBtn.addEventListener('click', () => {
-    tabCount++;
-    const tabId = 'tab' + tabCount;
-    const newTabBtn = document.createElement('div');
-    newTabBtn.classList.add('tab');
-    newTabBtn.id = tabId;
-    newTabBtn.textContent = `Tab ${tabCount}`;
-    tabs.appendChild(newTabBtn);
+// Check if the string is a valid URL
+function isValidUrl(str) {
+  try {
+    new URL(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
-    // Switch to new tab when clicked
-    newTabBtn.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        newTabBtn.classList.add('active');
-        activeTabId = tabId;
-        mainIframe.src = 'https://duckduckgo.com';
-    });
-
-    // Auto activate new tab
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    newTabBtn.classList.add('active');
-    activeTabId = tabId;
-    mainIframe.src = 'https://duckduckgo.com';
-});
-
-// Initial overlay on page load
-window.addEventListener('load', () => {
-    const interval = showOverlay();
-    setTimeout(() => hideOverlay(interval), 2000);
-});
+// Initialize default home tab
+createTab(HOME_URL);
