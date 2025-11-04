@@ -1,0 +1,6 @@
+froggies-proxy/
+│
+├── index.html      ← Your main HTML file
+├── style.css       ← Your CSS file
+└── script.js       ← Your JavaScript file
+
