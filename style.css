@@ -1,84 +1,93 @@
-/* Base Dark Theme */
+/* Dark arcade theme */
 body {
-    margin:0;
-    font-family: 'Comic Sans MS', sans-serif;
-    background:#111;
-    color:#eee;
+    margin: 0;
+    font-family: 'Press Start 2P', cursive;
+    background-color: #0d0d0d;
+    color: #00ff99;
 }
 
-/* Home Screen */
-#homeScreen {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    height:100vh;
-    text-align:center;
-    background: radial-gradient(circle at top left,#0d0d0d,#1a1a1a);
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #111;
+    gap: 10px;
 }
 
-#homeScreen h1 {
-    font-size:4em; 
-    color:#00ff66; 
-    text-shadow: 2px 2px 8px #000;
+header input {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    font-family: monospace;
 }
 
-.subtitle {
-    font-size:1.5em; 
-    margin-bottom:20px;
-    color:#aaffaa;
+header button {
+    padding: 5px 10px;
+    background-color: #222;
+    color: #00ff99;
+    border: none;
+    cursor: pointer;
+    font-family: monospace;
 }
 
-.site-buttons button {
-    margin:10px;
-    padding:15px 25px;
-    font-size:1.2em;
-    cursor:pointer;
-    border-radius:10px;
-    border:none;
-    background: linear-gradient(45deg, #00ff66, #009900);
-    color:#000;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.site-buttons button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px #00ff66;
+header button:hover {
+    background-color: #00ff99;
+    color: #111;
 }
 
-/* Animated Frogs at bottom */
-.animated-frogs {
-    margin-top:30px;
-    font-size:2em;
-}
-.animated-frogs span {
-    display:inline-block;
-    animation: hop 1s infinite;
-}
-.animated-frogs span:nth-child(2) { animation-delay: 0.2s; }
-.animated-frogs span:nth-child(3) { animation-delay: 0.4s; }
-.animated-frogs span:nth-child(4) { animation-delay: 0.6s; }
-
-@keyframes hop {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+.tabs {
+    display: flex;
+    background-color: #111;
+    padding: 5px;
+    gap: 5px;
 }
 
-/* VPN Overlay */
-.vpn-overlay {
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:linear-gradient(135deg,#333,#111);
-    display:flex;flex-direction:column;justify-content:center;align-items:center;
-    color:white; z-index:1000;
-    text-align:center;
+.tab {
+    padding: 5px 10px;
+    background-color: #222;
+    cursor: pointer;
+    border-radius: 4px;
 }
-.vpn-overlay button { padding:10px 20px; font-size:1.2em; margin-top:20px; cursor:pointer; background:#00ff66; border:none; border-radius:5px; color:#000; }
 
-/* Browser UI */
-.tab-bar { display:flex; background:#222; padding:5px; }
-.tab-bar button { margin-right:5px; padding:5px 10px; cursor:pointer; background:#444; color:#fff; border:none; border-radius:5px; }
-.tab-bar button:hover { background:#00ff66; color:#000; }
-.url-bar { display:flex; padding:10px; background:#111; }
-.url-bar input { flex:1; padding:5px; font-size:1em; background:#222; color:#fff; border:none; border-radius:5px; }
-.url-bar button { padding:5px 10px; margin-left:5px; cursor:pointer; background:#00ff66; border:none; border-radius:5px; color:#000; }
-#iframeContainer { width:100%; height:80vh; position:relative; }
-iframe { width:100%; height:100%; border:none; position:absolute; top:0; left:0; }
+.tab.active {
+    background-color: #00ff99;
+    color: #111;
+}
+
+.iframe-container {
+    width: 100%;
+    height: calc(100vh - 90px);
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Overlay for loading */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #111;
+    color: #00ff99;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-size: 20px;
+    z-index: 9999;
+}
+
+.overlay-content p {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
