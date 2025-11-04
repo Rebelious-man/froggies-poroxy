@@ -1,5 +1,7 @@
-froggies-proxy/
+\froggies-proxy/
 │
-├── index.html
-├── style.css
-└── script.js
+├── index.html          # The main HTML file for the proxy browser
+├── styles.css          # The stylesheet for the design and layout
+├── script.js           # The JavaScript file for functionality
+└── assets/             # (Optional) Folder for images, icons, or other media
+    └── logo.png        # Example logo file (if you want to add one)
