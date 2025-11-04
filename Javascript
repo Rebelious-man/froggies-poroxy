@@ -1,6 +1,6 @@
-// Basic configuration
-const HOME_URL = 'https://anything.aaimsedu.in';
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';  // CORS proxy
+// Configuration
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';  // Free CORS proxy
+const DEFAULT_HOME_URL = 'https://www.example.com'; // Home page to load by default
 
 // DOM elements
 const searchInput = document.getElementById('searchInput');
@@ -15,27 +15,33 @@ let activeTab = null;
 let tabIndex = 0;
 const tabs = [];
 
-// Helper function to show the loading popup
+// Show loading screen
 function showLoading(text = 'Loading...') {
   loadingText.innerText = text;
   loadingPopup.style.display = 'flex';
 }
 
-// Helper function to hide the loading popup
+// Hide loading screen
 function hideLoading() {
   loadingPopup.style.display = 'none';
 }
 
-// Function to create a new tab
+// Create a new tab with the specified URL
 function createTab(url) {
   const tabId = `tab-${tabIndex++}`;
   const tab = document.createElement('div');
   tab.classList.add('tab');
   tab.setAttribute('data-tab-id', tabId);
-  tab.innerHTML = `<span>${url}</span>`;
+  tab.innerHTML = `<span>${url}</span><button class="close-tab">X</button>`;
   tabsContainer.appendChild(tab);
 
-  // Click event for switching tabs
+  // Close tab functionality
+  const closeButton = tab.querySelector('.close-tab');
+  closeButton.addEventListener('click', () => {
+    closeTab(tabId);
+  });
+
+  // Handle tab click to switch to this tab
   tab.addEventListener('click', () => {
     switchTab(tabId);
   });
@@ -44,7 +50,7 @@ function createTab(url) {
   switchTab(tabId);
 }
 
-// Switch to a specific tab
+// Switch to the clicked tab
 function switchTab(tabId) {
   // Deactivate the current tab
   if (activeTab) {
@@ -52,50 +58,64 @@ function switchTab(tabId) {
     activeTabElement.classList.remove('active');
   }
 
-  // Activate the new tab
+  // Activate the clicked tab
   activeTab = tabId;
   const newTabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
   newTabElement.classList.add('active');
 
-  // Update iframe with the corresponding URL
+  // Load the content of the tab (the website)
   const tab = tabs.find(tab => tab.id === tabId);
   loadTabContent(tab.url);
 }
 
-// Load content in the iframe for the active tab
+// Load the content of the selected tab in an iframe
 function loadTabContent(url) {
   showLoading('Loading content...');
-  tabContent.innerHTML = `<iframe src="${CORS_PROXY}${encodeURIComponent(url)}" sandbox="allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>`;
+  tabContent.innerHTML = `<iframe src="${CORS_PROXY + encodeURIComponent(url)}" sandbox="allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>`;
   hideLoading();
 }
 
-// Handle search button click
+// Close a tab
+function closeTab(tabId) {
+  const tab = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+  if (tab) {
+    tab.remove();
+  }
+  const tabIndexToRemove = tabs.findIndex(tab => tab.id === tabId);
+  if (tabIndexToRemove !== -1) {
+    tabs.splice(tabIndexToRemove, 1);
+  }
+
+  // If the closed tab was active, switch to another tab
+  if (activeTab === tabId && tabs.length > 0) {
+    switchTab(tabs[0].id);
+  }
+}
+
+// Handle the search button click event (to load the URL)
 searchButton.addEventListener('click', () => {
   const query = searchInput.value.trim();
   if (query) {
-    // If it's a URL, load directly, otherwise treat it as a search query
+    // Validate and load the URL
     if (isValidUrl(query)) {
       createTab(query);
     } else {
-      const searchUrl = `${HOME_URL}?q=${encodeURIComponent(query)}`;
-      createTab(searchUrl);
+      alert('Invalid URL');
     }
   }
-  searchInput.value = ''; // Clear input field after search
+  searchInput.value = ''; // Clear the input field after search
 });
 
-// Check if the string is a valid URL
+// Check if the entered string is a valid URL
 function isValidUrl(str) {
   try {
-    new URL(str);
+    new URL(str);  // Try to construct a URL object
     return true;
   } catch (e) {
     return false;
   }
 }
 
-// Initialize default home tab
-createTab(HOME_URL);
-
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+// Initialize the app with a default home tab
+createTab(DEFAULT_HOME_URL);
 
