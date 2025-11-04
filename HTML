@@ -1,30 +1,380 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐸 Froggies Proxy</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Froggies Proxy Browser</title>
+  <style>
+    :root{
+      --frog-green:#34d399;
+      --accent:#7c3aed;
+      --bg1:linear-gradient(135deg,#e8fff0,#dff4ff);
+      --glass: rgba(255,255,255,0.85);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{
+      display:flex;flex-direction:column;background:var(--bg1);color:#042;
+    }
+
+    /* Top bar */
+    .topbar{
+      display:flex;align-items:center;gap:12px;padding:12px 16px;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.6));
+      box-shadow: 0 4px 20px rgba(12,16,50,0.06);
+    }
+    .logo{
+      display:flex;align-items:center;gap:8px;font-weight:800;color:var(--accent);
+    }
+    .logo .frog{font-size:20px;}
+
+    .address-bar{
+      flex:1;display:flex;gap:8px;align-items:center;
+    }
+    .address-bar input[type="text"]{
+      flex:1;padding:10px 12px;border-radius:10px;border:1px solid #e6e6e6;
+      background:var(--glass);outline:none;font-size:14px;
+    }
+    .address-bar button{
+      padding:10px 14px;border-radius:10px;border:none;background:var(--frog-green);color:#042;font-weight:700;cursor:pointer;
+    }
+
+    .controls{display:flex;gap:8px;align-items:center;margin-left:8px;}
+    .controls button{padding:8px 10px;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer;}
+
+    /* main area */
+    .main{
+      display:flex;flex:1;overflow:hidden;padding:12px;
+    }
+    .left{
+      width:320px;background:rgba(255,255,255,0.75);border-radius:12px;padding:12px;margin-right:12px;box-shadow:0 8px 30px rgba(2,6,23,0.06);
+      display:flex;flex-direction:column;
+    }
+    .left h3{margin:6px 0 12px 0;color:var(--accent);}
+    .history{flex:1;overflow:auto;}
+    .history button{display:block;width:100%;text-align:left;padding:8px;border-radius:8px;border:none;background:transparent;cursor:pointer;}
+    .left .note{font-size:12px;color:#555;margin-top:8px;}
+
+    .right{flex:1;display:flex;flex-direction:column;min-width:0;}
+    .viewport{
+      flex:1;position:relative;border-radius:12px;overflow:hidden;background:white;border:1px solid rgba(0,0,0,0.05);
+    }
+    iframe#viewer{width:100%;height:100%;border:0;display:block;background:white;}
+    .fallback{position:absolute;inset:0;padding:14px;overflow:auto;display:none;background:white;}
+
+    /* loading popup */
+    .popup{
+      position:fixed;left:50%;top:36%;transform:translate(-50%,-50%);
+      z-index:9999;padding:18px 28px;border-radius:14px;background:rgba(255,255,255,0.98);
+      box-shadow:0 18px 48px rgba(12,16,50,0.18);font-size:20px;font-weight:800;color:#0f172a;border:3px dashed var(--accent);
+      display:none;align-items:center;gap:10px;
+    }
+
+    /* bottom status */
+    .statusbar{padding:8px 12px;font-size:13px;color:#2a3a3a;background:transparent;text-align:left;}
+
+    /* small badge */
+    #froggies-badge{
+      position:fixed;left:12px;bottom:12px;background:linear-gradient(90deg,var(--frog-green),#60a5fa);
+      color:#042;padding:8px 12px;border-radius:999px;font-weight:700;z-index:9998;
+      box-shadow:0 8px 32px rgba(2,6,23,0.12);
+    }
+
+    /* small responsive */
+    @media (max-width:900px){
+      .left{display:none;}
+    }
+  </style>
 </head>
 <body>
-<div class="overlay" id="overlay">
-    <div class="overlay-content">
-        <p id="loading-text">Loading the froggiest proxy...</p>
+  <div class="topbar">
+    <div class="logo"><span class="frog">🐸</span> <div>Froggies Proxy</div></div>
+
+    <div class="address-bar">
+      <input id="addressInput" type="text" placeholder="Type a URL (https://...) or search terms — default site: anything.aaimsedu.in" />
+      <button id="goBtn">Go</button>
     </div>
-</div>
 
-<header>
-    <h1>🐸 Froggies Proxy</h1>
-    <input type="text" id="url-input" placeholder="Enter URL including https://">
-    <button id="go-btn">Go</button>
-    <button id="new-tab-btn">New Tab</button>
-</header>
+    <div class="controls">
+      <button id="homeBtn">Home</button>
+      <button id="reloadBtn">Reload</button>
+    </div>
+  </div>
 
-<div class="tabs" id="tabs"></div>
-<div class="iframe-container" id="iframe-container">
-    <iframe src="https://duckduckgo.com" frameborder="0" id="main-iframe"></iframe>
-</div>
+  <div class="main">
+    <div class="left">
+      <h3>Quick Links / History</h3>
+      <div class="history" id="historyList">
+        <!-- history items -->
+      </div>
+      <div class="note">Search behavior:
+        <ul style="margin:6px 0 0 18px;padding:0">
+          <li style="font-size:12px">Enter a full URL → opens it.</li>
+          <li style="font-size:12px">Enter words → searches the base site (anything.aaimsedu.in) and falls back to DuckDuckGo site search.</li>
+        </ul>
+      </div>
+    </div>
 
-<script src="script.js"></script>
+    <div class="right">
+      <div class="viewport">
+        <iframe id="viewer" sandbox="allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+        <div class="fallback" id="fallback"></div>
+      </div>
+      <div class="statusbar" id="status">Ready — home: <strong>https://anything.aaimsedu.in</strong></div>
+    </div>
+  </div>
+
+  <div id="froggies-badge">Froggies Proxy</div>
+  <div class="popup" id="loadingPopup"><span style="font-size:22px">🐸</span> <span id="popupText">DUMMMMM!</span></div>
+
+  <script>
+    (function(){
+      // Configuration
+      const HOME = 'https://anything.aaimsedu.in';
+      const CORS_PROXY = 'https://api.allorigins.win/raw?url='; // public CORS proxy (may be rate-limited)
+      const viewer = document.getElementById('viewer');
+      const fallback = document.getElementById('fallback');
+      const addressInput = document.getElementById('addressInput');
+      const goBtn = document.getElementById('goBtn');
+      const homeBtn = document.getElementById('homeBtn');
+      const reloadBtn = document.getElementById('reloadBtn');
+      const loadingPopup = document.getElementById('loadingPopup');
+      const status = document.getElementById('status');
+      const historyList = document.getElementById('historyList');
+
+      // Keep a small history in-memory
+      let hist = [];
+
+      // Helpers
+      function showLoading(text='DUMMMMM!'){
+        document.getElementById('popupText').textContent = text;
+        loadingPopup.style.display = 'flex';
+      }
+      function hideLoading(){ loadingPopup.style.display = 'none'; }
+
+      function isProbablyUrl(s){
+        // crude test
+        try {
+          const u = new URL(s);
+          return true;
+        } catch (e) {
+          return /^\s*(https?:\/\/)/i.test(s);
+        }
+      }
+
+      function ensureProtocol(u){
+        if (/^\s*https?:\/\//i.test(u)) return u;
+        return 'https://' + u;
+      }
+
+      function addHistory(title, url){
+        hist.unshift({title:title || url, url});
+        if (hist.length > 40) hist.pop();
+        renderHistory();
+      }
+      function renderHistory(){
+        historyList.innerHTML = '';
+        hist.forEach((h,idx)=>{
+          const btn = document.createElement('button');
+          btn.textContent = (h.title.length>60? h.title.slice(0,56)+'...' : h.title) + ' — ' + h.url.replace(/^https?:\/\//,'');
+          btn.onclick = ()=> loadTarget(h.url);
+          historyList.appendChild(btn);
+        });
+      }
+
+      // Attempt to load via iframe first. If the iframe cannot load (blocked), fallback to fetch+render.
+      function loadTarget(raw){
+        let url = raw.trim();
+        // if input is empty, go home
+        if (!url) { loadTarget(HOME); return; }
+
+        // If it's not a URL, treat as search terms
+        if (!isProbablyUrl(url) && !/^\s*www\./i.test(url)) {
+          // primary attempt: search on the base site by appending ?q= query (best-effort)
+          const q = encodeURIComponent(url);
+          const siteSearchCandidate = `${HOME}/?q=${q}`;
+          // Also build a safer fallback to DuckDuckGo site search
+          const ddg = `https://duckduckgo.com/?q=site:anything.aaimsedu.in+${q}`;
+          showLoading('Searching… 🐸');
+          // Try the siteSearchCandidate in iframe first
+          setTimeout(()=>{ tryLoadInIframe(siteSearchCandidate, () => {
+              // on failure to load in iframe, fallback to ddg
+              tryLoadInIframe(ddg, () => {
+                // if both fail, try fetch+render of primary site candidate
+                fetchAndRender(siteSearchCandidate);
+              });
+            });
+          }, 120);
+          updateStatus('Searching: ' + url);
+          addHistory(url, siteSearchCandidate);
+          addressInput.value = url;
+          return;
+        }
+
+        // Probably a URL
+        if (!/^\s*https?:\/\//i.test(url)) url = ensureProtocol(url);
+
+        showLoading('Loading… 🐸');
+        updateStatus('Loading: ' + url);
+        addressInput.value = url;
+        addHistory(url, url);
+
+        tryLoadInIframe(url, () => {
+          // iframe failed / blocked -> try fetch+render
+          fetchAndRender(url);
+        });
+      }
+
+      function tryLoadInIframe(url, onBlocked){
+        // set iframe src and listen for load or error/timeouts
+        let fired = false;
+        viewer.style.display = 'block';
+        fallback.style.display = 'none';
+        viewer.src = url;
+
+        // Because browsers don't fire iframe.onerror reliably for X-Frame-Options,
+        // use a timeout as fallback: if 'load' doesn't arrive within 4s, consider blocked.
+        const to = setTimeout(()=>{
+          if (!fired) {
+            fired = true;
+            hideLoading();
+            // We need to check if contentWindow contains expected location — Cross-origin prevents reading it.
+            // Assume blocked and call onBlocked
+            if (typeof onBlocked === 'function') onBlocked();
+          }
+        }, 5000);
+
+        function onload(){
+          if (fired) return;
+          fired = true;
+          clearTimeout(to);
+          hideLoading();
+          updateStatus('Loaded in iframe: ' + url);
+          // good: user can interact inside iframe (unless cross-origin scripts prevented)
+          // remove listener
+          viewer.removeEventListener('load', onload);
+        }
+        viewer.addEventListener('load', onload);
+      }
+
+      // Fetch HTML via CORS proxy, sanitize (remove scripts, iframes), rewrite links to route through this loader, then show in fallback div.
+      async function fetchAndRender(url){
+        showLoading('Fetching via proxy… 🐸');
+        updateStatus('Fetched via proxy: ' + url);
+        viewer.style.display = 'none';
+        fallback.style.display = 'block';
+        fallback.innerHTML = '<p style="color:#666">Fetching content…</p>';
+
+        try {
+          const resp = await fetch(CORS_PROXY + encodeURIComponent(url));
+          if (!resp.ok) throw new Error('Fetch failed: ' + resp.status);
+          let text = await resp.text();
+
+          // parse and sanitize:
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
+
+          // remove scripts and inline event handlers and iframes
+          doc.querySelectorAll('script, iframe, object, embed').forEach(n => n.remove());
+          // remove on* attributes
+          doc.querySelectorAll('*').forEach(node=>{
+            for (let i = 0; i < node.attributes.length; i++) {
+              const name = node.attributes[i] && node.attributes[i].name;
+              if (!name) continue;
+              if (/^on/i.test(name)) node.removeAttribute(name);
+            }
+          });
+
+          // rewrite links and forms to keep within this proxy
+          // anchors
+          doc.querySelectorAll('a[href]').forEach(a=>{
+            try {
+              const orig = a.getAttribute('href');
+              if (!orig) return;
+              const abs = new URL(orig, url).toString();
+              a.setAttribute('href', '#');
+              a.addEventListener('click', (e)=>{
+                e.preventDefault();
+                loadTarget(abs);
+              });
+              a.style.color = 'var(--accent)';
+            } catch(e){}
+          });
+          // forms: replace action to submit to our loader by intercepting submit
+          doc.querySelectorAll('form').forEach(f=>{
+            f.addEventListener('submit', (e)=>{
+              e.preventDefault();
+              // build form data into query string and load as GET
+              const fd = new FormData(f);
+              const params = new URLSearchParams();
+              for (const [k,v] of fd.entries()) params.append(k,v);
+              const action = f.getAttribute('action') || url;
+              const targetUrl = new URL(action, url).toString() + (params.toString() ? ('?' + params.toString()) : '');
+              loadTarget(targetUrl);
+            });
+          });
+
+          // Simple cosmetic injection: add top-left badge and a header that shows original URL
+          const header = doc.createElement('div');
+          header.style.cssText = 'position:sticky;top:0;z-index:999;padding:10px;background:linear-gradient(90deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));border-bottom:1px solid rgba(0,0,0,0.06);';
+          header.innerHTML = '<strong style="color:var(--accent)">Froggies Proxy</strong> — viewing: <span style="font-family:monospace;">' + url + '</span>';
+          doc.body.insertBefore(header, doc.body.firstChild);
+
+          // serialize back to string and display
+          const cleaned = '<base href="' + escapeHtml(url) + '">\n' + doc.documentElement.outerHTML;
+          fallback.innerHTML = cleaned;
+
+          // small UX: attach delegated click handlers for links we couldn't rewrite (e.g., generated later)
+          fallback.querySelectorAll('a').forEach(a=>{
+            // already rewritten above, but for safety:
+            if (!a.onclick) {
+              const href = a.getAttribute('href');
+              if (href && !href.startsWith('#')) {
+                try {
+                  const abs = new URL(href, url).toString();
+                  a.addEventListener('click', (e)=>{ e.preventDefault(); loadTarget(abs); });
+                } catch(e){}
+              }
+            }
+          });
+
+          hideLoading();
+        } catch (err){
+          hideLoading();
+          fallback.innerHTML = '<div style="padding:18px;color:#922;">Unable to fetch content via proxy. Error: '+ escapeHtml(err.message) +'</div>';
+          updateStatus('Proxy fetch error');
+        }
+      }
+
+      // small escape for inserting base href
+      function escapeHtml(s){ return (s+'').replace(/[&<>"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+      function updateStatus(txt){ status.innerHTML = txt; }
+
+      // UI bindings
+      goBtn.addEventListener('click', ()=> loadTarget(addressInput.value));
+      addressInput.addEventListener('keydown', (e)=> { if (e.key === 'Enter') loadTarget(addressInput.value); });
+
+      homeBtn.addEventListener('click', ()=> loadTarget(HOME));
+      reloadBtn.addEventListener('click', ()=> {
+        // reload current: prefer iframe if visible
+        if (viewer.style.display !== 'none' && viewer.src) {
+          showLoading('Reloading… 🐸');
+          viewer.contentWindow.location.reload();
+        } else {
+          // if fallback visible, try refetching addressInput value
+          loadTarget(addressInput.value || HOME);
+        }
+      });
+
+      // Start at home
+      addressInput.value = HOME;
+      loadTarget(HOME);
+
+      // Expose for debugging (optional)
+      window.froggies = { loadTarget, hist };
+
+    })();
+  </script>
 </body>
 </html>
