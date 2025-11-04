@@ -1,92 +1,72 @@
-// Home Screen -> VPN
-document.getElementById("enterBrowserBtn").addEventListener("click", () => {
-    document.getElementById("homeScreen").style.display = "none";
-    document.getElementById("vpnOverlay").style.display = "flex";
+const overlay = document.getElementById('overlay');
+const loadingText = document.getElementById('loading-text');
+const goBtn = document.getElementById('go-btn');
+const urlInput = document.getElementById('url-input');
+const iframeContainer = document.getElementById('iframe-container');
+const mainIframe = document.getElementById('main-iframe');
+const newTabBtn = document.getElementById('new-tab-btn');
+const tabs = document.getElementById('tabs');
+
+let tabCount = 1;
+let activeTabId = 'tab1';
+
+function showOverlay() {
+    const messages = [
+        "Loading the froggiest proxy...",
+        "Hopping through the web...",
+        "Eating virtual flies...",
+        "Croak! Almost there...",
+        "Froggies are dancing!"
+    ];
+    let i = 0;
+    loadingText.textContent = messages[i];
+    overlay.style.display = 'flex';
+    const interval = setInterval(() => {
+        i = (i + 1) % messages.length;
+        loadingText.textContent = messages[i];
+    }, 1000);
+    return interval;
+}
+
+function hideOverlay(interval) {
+    clearInterval(interval);
+    overlay.style.display = 'none';
+}
+
+goBtn.addEventListener('click', () => {
+    const url = urlInput.value.trim();
+    if (!url) return;
+    const interval = showOverlay();
+    mainIframe.src = url;
+    mainIframe.onload = () => hideOverlay(interval);
 });
 
-// VPN Fun Messages
-const vpnMessages = [
-    "Encrypting frog hops...",
-    "Hiding your web footprints...",
-    "Ribbit! VPN almost ready...",
-    "Swamping through cyberspace..."
-];
-
-let vpnIndex = 0;
-const vpnFunText = document.getElementById("vpnFunText");
-setInterval(() => {
-    vpnFunText.textContent = vpnMessages[vpnIndex];
-    vpnIndex = (vpnIndex + 1) % vpnMessages.length;
-}, 2000);
-
-// Start Browser
-document.getElementById("startBrowserBtn").addEventListener("click", () => {
-    document.getElementById("vpnOverlay").style.display = "none";
-    document.getElementById("browser").style.display = "block";
-});
-
-// Multi-tab Browser
-let tabCount = 0;
-let tabs = {};
-const tabsContainer = document.getElementById("tabsContainer");
-const iframeContainer = document.getElementById("iframeContainer");
-const newTabBtn = document.getElementById("newTabBtn");
-const urlInput = document.getElementById("urlInput");
-const goBtn = document.getElementById("goBtn");
-
-// Create new tab
-function createTab(url = "https://duckduckgo.com") {
+newTabBtn.addEventListener('click', () => {
     tabCount++;
-    const tabId = "tab" + tabCount;
+    const tabId = 'tab' + tabCount;
+    const newTabBtn = document.createElement('div');
+    newTabBtn.classList.add('tab');
+    newTabBtn.id = tabId;
+    newTabBtn.textContent = `Tab ${tabCount}`;
+    tabs.appendChild(newTabBtn);
 
-    // Tab button
-    const tabButton = document.createElement("button");
-    tabButton.textContent = "Tab " + tabCount;
-    tabButton.id = "btn-" + tabId;
-    tabButton.addEventListener("click", () => switchTab(tabId));
-    tabsContainer.appendChild(tabButton);
-
-    // Iframe
-    const iframe = document.createElement("iframe");
-    iframe.src = url;
-    iframe.id = tabId;
-    iframe.style.display = "none";
-    iframeContainer.appendChild(iframe);
-
-    tabs[tabId] = iframe;
-
-    switchTab(tabId);
-}
-
-// Switch tabs
-function switchTab(tabId) {
-    Object.keys(tabs).forEach(id => {
-        tabs[id].style.display = id===tabId?"block":"none";
-        document.getElementById("btn-"+id).style.background = id===tabId?"#00ff66":"#444";
-        document.getElementById("btn-"+id).style.color = id===tabId?"#000":"#fff";
+    // Switch to new tab when clicked
+    newTabBtn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        newTabBtn.classList.add('active');
+        activeTabId = tabId;
+        mainIframe.src = 'https://duckduckgo.com';
     });
-}
 
-// Go button
-goBtn.addEventListener("click", () => {
-    const activeTabId = Object.keys(tabs).find(id => tabs[id].style.display==="block");
-    if (!activeTabId) return;
-    let url = urlInput.value.trim();
-    if (!/^https?:\/\//i.test(url)) url = "https://"+url;
-    tabs[activeTabId].src = url;
+    // Auto activate new tab
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    newTabBtn.classList.add('active');
+    activeTabId = tabId;
+    mainIframe.src = 'https://duckduckgo.com';
 });
 
-// New tab button
-newTabBtn.addEventListener("click", ()=>createTab());
-
-// Initialize first tab
-createTab();
-
-// Preload buttons on home screen
-document.querySelectorAll(".preload-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        createTab(btn.dataset.url);
-        document.getElementById("homeScreen").style.display = "none";
-        document.getElementById("browser").style.display = "block";
-    });
+// Initial overlay on page load
+window.addEventListener('load', () => {
+    const interval = showOverlay();
+    setTimeout(() => hideOverlay(interval), 2000);
 });
