@@ -96,3 +96,6 @@ function isValidUrl(str) {
 
 // Initialize default home tab
 createTab(HOME_URL);
+
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+
