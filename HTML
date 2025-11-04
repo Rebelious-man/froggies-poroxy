@@ -1,46 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>🐸 Froggies Proxy</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐸 Froggies Proxy</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Dark Arcade-style Home Screen -->
-    <div id="homeScreen">
-        <h1>🐸 Froggies Proxy</h1>
-        <p class="subtitle">Your multi-tab proxy browser in one page!</p>
-        <div class="site-buttons">
-            <button class="preload-btn" data-url="https://duckduckgo.com">DuckDuckGo</button>
-            <button class="preload-btn" data-url="https://example.com">Example</button>
-            <button class="preload-btn" data-url="https://w3schools.com">W3Schools</button>
-        </div>
-        <button id="enterBrowserBtn">Enter Froggies Browser</button>
-        <div class="animated-frogs">
-            <span>🐸</span><span>🐸</span><span>🐸</span><span>🐸</span>
-        </div>
+<div class="overlay" id="overlay">
+    <div class="overlay-content">
+        <p id="loading-text">Loading the froggiest proxy...</p>
     </div>
+</div>
 
-    <!-- VPN / Loading Overlay -->
-    <div id="vpnOverlay" class="vpn-overlay" style="display:none;">
-        <h2>🐸 Froggies VPN Loading...</h2>
-        <p id="vpnFunText">Encrypting frog hops...</p>
-        <button id="startBrowserBtn">Start Browser</button>
-    </div>
+<header>
+    <h1>🐸 Froggies Proxy</h1>
+    <input type="text" id="url-input" placeholder="Enter URL including https://">
+    <button id="go-btn">Go</button>
+    <button id="new-tab-btn">New Tab</button>
+</header>
 
-    <!-- Browser with Multi-tabs -->
-    <div id="browser" style="display:none;">
-        <div class="tab-bar">
-            <button id="newTabBtn">+ New Tab</button>
-            <div id="tabsContainer"></div>
-        </div>
-        <div class="url-bar">
-            <input type="text" id="urlInput" placeholder="Enter URL (https://example.com)">
-            <button id="goBtn">Go</button>
-        </div>
-        <div id="iframeContainer"></div>
-    </div>
+<div class="tabs" id="tabs"></div>
+<div class="iframe-container" id="iframe-container">
+    <iframe src="https://duckduckgo.com" frameborder="0" id="main-iframe"></iframe>
+</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
