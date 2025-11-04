@@ -1,56 +1,47 @@
 body {
-    margin: 0;
+    margin:0;
     font-family: 'Comic Sans MS', sans-serif;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff);
-    text-align: center;
-    color: #333;
+    background: linear-gradient(135deg,#89f7fe,#66a6ff);
 }
 
-.loading-screen {
-    position: fixed;
-    top:0; left:0;
-    width:100%;
-    height:100%;
+/* Home Screen */
+#homeScreen {
     display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #ffd89b, #19547b);
-    color: white;
-    z-index: 10;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    text-align:center;
+    background: radial-gradient(circle, #fffa65,#ff8c00);
 }
 
-.loading-screen h1 {
-    font-size: 3em;
+#homeScreen h1 { font-size:4em; color:#007700; text-shadow:2px 2px #222; }
+.subtitle { font-size:1.5em; margin-bottom:20px; }
+
+.site-buttons button {
+    margin:10px;
+    padding:10px 20px;
+    font-size:1em;
+    cursor:pointer;
+    border-radius:5px;
+    background:#00ff66;
 }
 
-.main-content {
-    padding: 20px;
+/* VPN Overlay */
+.vpn-overlay {
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(135deg,#ffd89b,#19547b);
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    color:white; z-index:1000;
 }
 
-form {
-    margin: 20px 0;
-}
+.vpn-overlay button { padding:10px 20px; font-size:1.2em; margin-top:20px; cursor:pointer; }
 
-input[type="text"] {
-    width: 70%;
-    padding: 10px;
-    font-size: 1em;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    background-color: #fffa65;
-    border: none;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #ffd700;
-}
-
-iframe {
-    border-radius: 10px;
-}
+/* Browser UI */
+.tab-bar { display:flex; background:#ffd700; padding:5px; }
+.tab-bar button { margin-right:5px; padding:5px 10px; cursor:pointer; }
+.url-bar { display:flex; padding:10px; background:#fffa65; }
+.url-bar input { flex:1; padding:5px; font-size:1em; }
+.url-bar button { padding:5px 10px; margin-left:5px; cursor:pointer; }
+#iframeContainer { width:100%; height:80vh; position:relative; }
+iframe { width:100%; height:100%; border:none; position:absolute; top:0; left:0; }
