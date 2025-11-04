@@ -62,7 +62,8 @@ function createTab(url = "https://duckduckgo.com") {
 function switchTab(tabId) {
     Object.keys(tabs).forEach(id => {
         tabs[id].style.display = id===tabId?"block":"none";
-        document.getElementById("btn-"+id).style.background = id===tabId?"#fffa65":"";
+        document.getElementById("btn-"+id).style.background = id===tabId?"#00ff66":"#444";
+        document.getElementById("btn-"+id).style.color = id===tabId?"#000":"#fff";
     });
 }
 
