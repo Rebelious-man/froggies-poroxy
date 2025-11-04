@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Froggies Proxy</title>
-    <link rel="stylesheet" href="style.css"> <!-- CSS file -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome to Froggies Proxy!</h1>
-    
-    <script src="script.js"></script> <!-- JS file -->
+    <div class="loading-screen" id="loadingScreen">
+        <h1>🐸 Froggies Proxy Loading...</h1>
+        <p id="funText">Loading the loading...</p>
+    </div>
+
+    <div class="main-content" id="mainContent" style="display:none;">
+        <h1>🐸 Welcome to Froggies Proxy!</h1>
+        <form target="searchframe" action="https://duckduckgo.com/" method="get" id="searchForm">
+            <input type="text" name="q" placeholder="Search the web..." required>
+            <button type="submit">Go</button>
+        </form>
+
+        <iframe name="searchframe" id="searchFrame" src="" style="width:100%; height:80vh; border:none;"></iframe>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
