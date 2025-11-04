@@ -22,3 +22,16 @@ window.addEventListener('load', () => {
         document.getElementById('mainContent').style.display = 'block';
     }, 3000); // 3 seconds loading
 });
+
+// Handle search form
+const searchForm = document.getElementById("searchForm");
+const searchInput = document.getElementById("searchInput");
+const searchFrame = document.getElementById("searchFrame");
+
+searchForm.addEventListener("submit", function(e) {
+    e.preventDefault(); // Prevent leaving the page
+    const query = searchInput.value.trim();
+    if(query) {
+        searchFrame.src = "https://duckduckgo.com/?q=" + encodeURIComponent(query);
+    }
+});
