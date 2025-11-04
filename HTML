@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>🐸 Froggies Proxy</title>
+    <title>🐸 Froggies Proxy Browser</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,16 +14,16 @@
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent" style="display:none;">
-        <h1>🐸 Welcome to Froggies Proxy!</h1>
-        
-        <!-- Search Form -->
-        <form id="searchForm">
-            <input type="text" id="searchInput" placeholder="Search DuckDuckGo..." required>
+        <h1>🐸 Froggies Proxy Browser</h1>
+
+        <!-- URL input -->
+        <form id="urlForm">
+            <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://duckduckgo.com)" required>
             <button type="submit">Go</button>
         </form>
 
-        <!-- Iframe for results -->
-        <iframe name="searchframe" id="searchFrame" src="" style="width:100%; height:80vh; border:none;"></iframe>
+        <!-- Iframe for in-site browsing -->
+        <iframe id="browserFrame" src="" style="width:100%; height:80vh; border:none;"></iframe>
     </div>
 
     <script src="script.js"></script>
